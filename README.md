@@ -1,14 +1,12 @@
 # AccessHub
 
-A professional, enterprise-style Role-Based Access Control (RBAC) dashboard built with Next.js, TypeScript, and Tailwind CSS. Designed to simulate the kind of internal tooling used by IT, IAM, and Security Operations teams to manage employee access, review requests, and maintain an auditable trail of all actions.
+An enterprise-style Role-Based Access Control (RBAC) dashboard that replicates the internal tooling used by IAM, IT Operations, and Security teams to govern employee access across systems. Built to demonstrate production UI patterns: structured access request workflows, approval and rejection flows with audit trails, and role-based permission management — all in a clean, dark-themed internal tool interface.
 
-> Built as a portfolio project demonstrating real-world UI patterns for enterprise internal tools.
+**[Live Demo →](https://red-moss-0e48f8c03.7.azurestaticapps.net)**
 
 ---
 
 ## Screenshots
-
-> _Add screenshots here after running the project locally._
 
 | Dashboard | Access Requests |
 |-----------|-----------------|
@@ -23,32 +21,30 @@ A professional, enterprise-style Role-Based Access Control (RBAC) dashboard buil
 ## Features
 
 ### Dashboard
-- At-a-glance stat cards: total users, active users, pending requests, and total roles
-- Recent activity feed pulled from the audit log
+- Stat cards showing total users, active users, pending requests, and defined roles
+- Live recent activity feed drawn from the audit log
 
 ### User Management
-- Full employee directory across six departments: Development, Service Desk, NOC, SOC, Issuer Services, and IAM
-- Per-department headcount breakdown
-- Status indicators: Active, Inactive, Suspended
+- Employee directory spanning six departments: Development, Service Desk, NOC, SOC, Issuer Services, and IAM
+- Per-department headcount summary
+- Account status tracking: Active, Inactive, Suspended
 
-### Access Requests
-- Submit new access requests via a modal form with field validation
-- Requester lookup auto-populates the department field
-- Role selector shows risk level (Low / Medium / High / Critical) and a description hint before submission
-- Filter requests by status: All, Pending, Approved, Rejected
-- **Approve** requests in one click — status updates immediately
-- **Reject** requests via a confirmation modal that requires a written rejection reason
-- Submission and action result banners with a direct link to the Audit Log
+### Access Request Workflow
+- Structured request submission form with requester lookup, department auto-population, and role selection
+- Each role displays its risk level (Low / Medium / High / Critical) and a plain-language description before submission
+- Requests are filtered by lifecycle status: All, Pending, Approved, Rejected
+- **Approval flow** — reviewers can approve a pending request in one action; status, reviewer name, and review date update immediately
+- **Rejection flow** — rejections require a written reason via a confirmation modal; the reason is recorded against the request and surfaced in the table
+- Action banners confirm each decision with a direct link through to the Audit Log
 
 ### Role Management
-- Card-based view of all defined roles
-- Each card displays the role description, assigned permission scopes, user count, risk level, and owner
-- Permission badges are colour-coded by sensitivity
+- Card-based catalogue of all access roles with descriptions, permission scopes, assigned user count, risk classification, and role owner
+- Permission badges are colour-coded by sensitivity level
 
 ### Audit Log
-- Chronological event log of all IAM actions: approvals, rejections, role assignments, access revocations, and security events
-- Approve and Reject actions from the Requests page write new entries to the top of the log in real time
-- Failure alert banner when security-relevant failures are present
+- Append-only event log covering: request submissions, approvals, rejections, role assignments, access revocations, login failures, and policy changes
+- Approve and reject actions write new entries to the top of the log in real time — no page refresh required
+- Alert banner flags security-relevant failures for immediate visibility
 
 ---
 
@@ -60,8 +56,9 @@ A professional, enterprise-style Role-Based Access Control (RBAC) dashboard buil
 | Language | TypeScript |
 | Styling | Tailwind CSS v4 |
 | State | React Context API |
-| Data | Local mock data (no backend) |
+| Data | Typed mock data (no backend) |
 | Fonts | Geist Sans / Geist Mono via `next/font` |
+| Deployment | Azure Static Web Apps |
 
 ---
 
@@ -88,13 +85,15 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser. The app redirects to `/dashboard` on load.
 
-### Other Commands
+### Build and Deploy
 
 ```bash
 npm run build   # Production build
-npm run start   # Start production server
+npm run start   # Start production server locally
 npm run lint    # Run ESLint
 ```
+
+The project is configured for deployment to **Azure Static Web Apps**. Any CI/CD pipeline that runs `npm run build` and serves the `.next` output will work, including Vercel and Netlify.
 
 ---
 
@@ -131,28 +130,28 @@ src/
 
 ## Key Design Decisions
 
-**React Context for shared state** — The Requests and Audit Log pages share a single context so that approve/reject actions on Requests immediately appear in the Audit Log without a backend or URL-based state.
+**React Context for cross-page state** — The Requests and Audit Log pages share a single context provider. Approve and reject actions update both pages simultaneously without a backend, routing change, or page reload.
 
-**Mock data only** — All data lives in `src/lib/mock-data.ts` with full TypeScript interfaces. Replacing it with real API calls requires only updating the context initialisation.
+**Typed mock data layer** — All data is defined in `src/lib/mock-data.ts` with full TypeScript interfaces. The shape mirrors what a real API would return, so replacing mock data with live API calls is isolated to the context initialisation.
 
-**Server and client components** — Pages that need no interactivity (Users, Roles, Dashboard) are server components. Only the Requests and Audit Log pages opt into `"use client"` for state and context.
+**Selective use of client components** — Pages with no interactivity (Dashboard, Users, Roles) remain server components. Only Requests and Audit Log use `"use client"` where state and context are required, keeping the client bundle minimal.
 
-**No external UI library** — All components are hand-built with Tailwind to keep the dependency surface minimal and the styling fully transparent.
+**No external component library** — Every UI component is purpose-built with Tailwind CSS. This keeps the dependency surface small, the styling fully visible, and the components easy to adapt.
 
 ---
 
 ## Future Improvements
 
 - [ ] Authentication (NextAuth.js or Clerk) with role-based route protection
-- [ ] Backend integration — REST or tRPC with a database (e.g. PostgreSQL via Prisma)
+- [ ] Backend integration — REST or tRPC API with a database (e.g. PostgreSQL via Prisma)
 - [ ] Email notifications on request approval or rejection
 - [ ] Paginated tables with server-side filtering and sorting
-- [ ] Search and filter controls on the Users and Audit Log pages
-- [ ] Dark/light theme toggle
+- [ ] Search across Users, Requests, and Audit Log
+- [ ] Role creation and permission editing UI
+- [ ] Bulk approve / reject actions on the Requests page
 - [ ] Mobile-responsive layout
 - [ ] Unit and integration tests (Jest + React Testing Library)
-- [ ] Role creation and permission editing UI
-- [ ] Bulk actions: approve/reject multiple requests at once
+- [ ] Dark / light theme toggle
 
 ---
 
